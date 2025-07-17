@@ -1,0 +1,110 @@
+@use 'sass:color';
+
+.chat-container {
+    font-family: $font-family-base;
+    max-width: 50rem;
+    margin: 1.25rem auto;
+    border: 0.06rem solid $color-chat-border;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: $shadow-light;
+    background-color: $color-chat-bg-light;
+}
+
+.chat-header {
+    background-color: $color-chat-bg-medium;
+    padding: 0.94rem;
+    margin: 0;
+    text-align: center;
+    color: $color-chat-text-dark;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logout-button {
+    padding: 0.5rem 0.75rem;
+    background-color: $color-error;
+    color: $color-white;
+    border: none;
+    border-radius: $border-radius-small;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+        background-color: color.adjust($color-error, $lightness: -10%);
+    }
+}
+
+.message-list {
+    height: 25rem;
+    overflow-y: scroll;
+    padding: 0.94rem;
+}
+
+.message-item {
+    margin-bottom: 0.63rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.31rem;
+    border: 0.06rem solid $color-chat-border;
+    word-wrap: break-word;
+}
+
+.message-item.my-message {
+    background-color: $color-my-message-bg;
+    margin-left: auto;
+}
+
+.message-item.other-message {
+    background-color: $color-other-message-bg;
+    margin-right: auto;
+}
+
+.message-sender {
+    font-weight: bold;
+    color: $color-primary;
+}
+
+.message-content {
+    color: $color-chat-text-dark;
+}
+
+.message-timestamp {
+    font-size: 0.75rem;
+    color: $color-chat-text-light;
+    text-align: right;
+    margin-top: 0.31rem;
+}
+
+.message-form {
+    display: flex;
+    padding: 0.94rem;
+    border-top: 0.06rem solid $color-chat-border;
+    background-color: $color-chat-bg-medium;
+}
+
+.message-input {
+    flex-grow: 1;
+    padding: 0.63rem;
+    border: 0.06rem solid $color-chat-border;
+    border-radius: 0.31rem;
+    margin-right: 0.63rem;
+    font-size: 1rem;
+}
+
+.send-button {
+    padding: 0.63rem 0.94rem;
+    background-color: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: 0.31rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+        background-color: color.adjust($color-primary, $lightness: -10%);
+    }
+}
