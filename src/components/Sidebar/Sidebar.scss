@@ -1,0 +1,74 @@
+@use 'sass:color';
+
+.chat-sidebar {
+    width: 15rem;
+    background-color: $color-background;
+    color: $color-text;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 0.06rem solid $color-border;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 20;
+}
+
+.sidebar-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 0.06rem solid color.adjust($color-background, $lightness: 10%);
+
+    h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: $color-primary;
+    }
+}
+
+.room-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.room-item {
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    border-radius: $border-radius-small;
+    margin-bottom: 0.25rem;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    font-size: 0.95rem;
+
+    &:hover {
+        background-color: color.adjust($color-background, $lightness: 10%);
+    }
+
+    &.active {
+        background-color: $color-primary;
+        color: $color-white;
+        font-weight: bold;
+    }
+}
+
+.create-room-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $color-secondary;
+    color: $color-white;
+    border: none;
+    border-radius: $border-radius-small;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0.13rem 0.25rem rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        background-color: color.adjust($color-secondary, $lightness: -10%);
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+    }
+}
