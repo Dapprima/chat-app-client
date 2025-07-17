@@ -4,7 +4,7 @@ import io, { Socket } from 'socket.io-client';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Navbar from '@/components/Navbar/Navbar';
-import CreateRoomModal from '@/components/CreateRoomModal';
+import CreateRoomModal from '@/components/CreateRoomModal/CreateRoomModal';
 
 import './ChatPage.scss';
 
@@ -24,6 +24,11 @@ interface ChatRoom {
   name: string;
 }
 
+interface OnlineUser {
+  id: string;
+  username: string;
+}
+
 const ChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -34,14 +39,32 @@ const ChatPage: React.FC = () => {
   const [isCreateRoomModalOpen, setIsCreateRoomModalOpen] = useState<boolean>(false);
   const [creatingRoom, setCreatingRoom] = useState<boolean>(false);
   const [createRoomError, setCreateRoomError] = useState<string | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initialJoinAttempted = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
+      setCurrentChatRoom(null);
+      setMessages([]);
+      setAvailableRooms([]);
+      setOnlineUsers([]);
+      initialJoinAttempted.current = false;
+      return;
+    }
+
+    if (socket && socket.connected) {
+      return;
+    }
 
     const newSocket = io('http://localhost:5000');
     setSocket(newSocket);
+    initialJoinAttempted.current = false;
 
     newSocket.on('connect', () => {
       console.log('Connected to socket.io server');
@@ -51,23 +74,54 @@ const ChatPage: React.FC = () => {
     newSocket.on('roomsList', (rooms: ChatRoom[]) => {
       console.log('Received rooms list:', rooms);
       setAvailableRooms(rooms);
-      if (!currentChatRoom && rooms.length > 0) {
-        const generalRoom = rooms.find((room) => room.name === 'General');
-        if (generalRoom) {
-          setCurrentChatRoom(generalRoom);
-          newSocket.emit('joinChat', generalRoom.id);
-        } else {
-          setCurrentChatRoom(rooms[0]);
-          newSocket.emit('joinChat', rooms[0].id);
+
+      if (!initialJoinAttempted.current && rooms.length > 0) {
+        let roomToJoin: ChatRoom | null = null;
+        if (currentChatRoom) {
+          roomToJoin = rooms.find((room) => room.id === currentChatRoom.id) || null;
         }
-      } else if (currentChatRoom) {
-        newSocket.emit('joinChat', currentChatRoom.id);
+
+        if (!roomToJoin) {
+          roomToJoin = rooms.find((room) => room.name === 'General') || rooms[0];
+        }
+
+        if (roomToJoin) {
+          setCurrentChatRoom(roomToJoin);
+          newSocket.emit('joinChat', {
+            chatId: roomToJoin.id,
+            userId: user._id,
+            username: user.username,
+          });
+          initialJoinAttempted.current = true;
+        } else {
+          setCurrentChatRoom(null);
+        }
+      } else if (currentChatRoom && !initialJoinAttempted.current) {
+        const roomExists = rooms.some((room) => room.id === currentChatRoom.id);
+        if (roomExists) {
+          newSocket.emit('joinChat', {
+            chatId: currentChatRoom.id,
+            userId: user._id,
+            username: user.username,
+          });
+          initialJoinAttempted.current = true;
+        } else if (rooms.length > 0) {
+          const generalRoom = rooms.find((room) => room.name === 'General') || rooms[0];
+          setCurrentChatRoom(generalRoom);
+          newSocket.emit('joinChat', {
+            chatId: generalRoom.id,
+            userId: user._id,
+            username: user.username,
+          });
+          initialJoinAttempted.current = true;
+        }
       }
     });
 
     newSocket.on('chatJoined', (actualChatId: string) => {
       console.log('Successfully joined chat with ID:', actualChatId);
       const joinedRoom = availableRooms.find((room) => room.id === actualChatId);
+
       if (joinedRoom && currentChatRoom?.id !== joinedRoom.id) {
         setCurrentChatRoom(joinedRoom);
       }
@@ -83,6 +137,26 @@ const ChatPage: React.FC = () => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
+    newSocket.on('onlineUsersInRoom', (users: OnlineUser[]) => {
+      console.log('Online users in room:', users);
+      setOnlineUsers(users);
+    });
+
+    newSocket.on('userJoinedRoom', (userJoined: OnlineUser) => {
+      console.log('User joined room:', userJoined.username);
+      setOnlineUsers((prevUsers) => {
+        if (!prevUsers.some((u) => u.id === userJoined.id)) {
+          return [...prevUsers, userJoined];
+        }
+        return prevUsers;
+      });
+    });
+
+    newSocket.on('userLeftRoom', (userLeft: OnlineUser) => {
+      console.log('User left room:', userLeft.username);
+      setOnlineUsers((prevUsers) => prevUsers.filter((u) => u.id !== userLeft.id));
+    });
+
     newSocket.on('error', (errorMessage: string) => {
       console.error('Socket error:', errorMessage);
     });
@@ -92,6 +166,8 @@ const ChatPage: React.FC = () => {
       setCurrentChatRoom(null);
       setMessages([]);
       setAvailableRooms([]);
+      setOnlineUsers([]);
+      initialJoinAttempted.current = false;
     });
 
     return () => {
@@ -100,8 +176,14 @@ const ChatPage: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (socket && user && currentChatRoom) {
-      socket.emit('joinChat', currentChatRoom.id);
+    if (socket && user && currentChatRoom && socket.connected) {
+      socket.emit('joinChat', {
+        chatId: currentChatRoom.id,
+        userId: user._id,
+        username: user.username,
+      });
+      setMessages([]);
+      setOnlineUsers([]);
     }
   }, [currentChatRoom, socket, user]);
 
@@ -128,12 +210,14 @@ const ChatPage: React.FC = () => {
 
   const handleRoomSelect = (roomName: string) => {
     const selectedRoom = availableRooms.find((room) => room.name === roomName);
+
     if (selectedRoom) {
-      if (currentChatRoom && socket) {
-        socket.emit('leaveChat', currentChatRoom.id);
+      if (currentChatRoom?.id !== selectedRoom.id) {
+        if (currentChatRoom && socket) {
+          socket.emit('leaveChat', currentChatRoom.id);
+        }
+        setCurrentChatRoom(selectedRoom);
       }
-      setCurrentChatRoom(selectedRoom);
-      setMessages([]);
     }
   };
 
@@ -157,6 +241,7 @@ const ChatPage: React.FC = () => {
       }
 
       const newRoom: ChatRoom = { id: data.id, name: data.name };
+
       setAvailableRooms((prevRooms) => [...prevRooms, newRoom]);
       handleRoomSelect(newRoom.name);
       setIsCreateRoomModalOpen(false);
@@ -175,6 +260,7 @@ const ChatPage: React.FC = () => {
         activeRoom={currentChatRoom?.name || ''}
         onRoomSelect={handleRoomSelect}
         onCreateRoom={() => setIsCreateRoomModalOpen(true)}
+        onlineUsers={onlineUsers}
       />
 
       <div className="chat-main">
