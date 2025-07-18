@@ -38,7 +38,7 @@ This repository contains the frontend application for a real-time chat system.
 1.  **Navigate:** `cd fullstack-chatapp/client`
 2.  **Install:** `npm install`
 3.  **Run:** `npm run dev`
-    - **Note:** Ensure the backend server is running first (refer to [Backend README](../server/README.md)).
+    - **Note:** Ensure the backend server is running first (refer to [Backend README](https://github.com/Dapprima/chat-app-server)).
 
 ## Usage
 
