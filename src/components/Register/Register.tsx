@@ -1,6 +1,7 @@
 import React, { useState, type FormEvent } from 'react';
 
 import { useAuth } from '@/context/AuthContext';
+import { registerUser } from '@/api/auth';
 
 import './Register.scss';
 
@@ -21,24 +22,13 @@ const Register: React.FC<RegisterProps> = ({ onSuccess, onSwitchToLogin }) => {
     setMessage('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
+      const newUser = await registerUser({ username, email, password });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        login(data);
-      } else {
-        setMessage(data.message || 'Registration failed');
-      }
-    } catch (error) {
+      login(newUser);
+      onSuccess();
+    } catch (error: any) {
       console.error('Registration error:', error);
-      setMessage('Network error or server unavailable');
+      setMessage(error.message || 'Registration failed');
     }
   };
 

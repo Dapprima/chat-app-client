@@ -1,39 +1,39 @@
 @use 'sass:color';
 
 .chat-header {
-    background-color: $color-chat-bg-medium;
-    padding: 0.94rem;
-    margin: 0;
-    text-align: center;
-    color: $color-chat-text-dark;
-    font-size: 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 0.06rem solid $color-chat-border;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  background-color: $color-chat-bg-medium;
+  padding: 0.94rem;
+  margin: 0;
+  text-align: center;
+  color: $color-chat-text-dark;
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.06rem solid $color-chat-border;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 
-    h1 {
-        margin: 0;
-        font-size: 1.25rem;
-        flex-grow: 1;
-        text-align: center;
-    }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    flex-grow: 1;
+    text-align: center;
+  }
 }
 
 .logout-button {
-    padding: 0.5rem 0.75rem;
-    background-color: $color-error;
-    color: $color-white;
-    border: none;
-    border-radius: $border-radius-small;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease-in-out;
+  padding: 0.5rem 0.75rem;
+  background-color: $color-error;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius-small;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
 
-    &:hover {
-        background-color: color.adjust($color-error, $lightness: -10%);
-    }
+  &:hover {
+    background-color: color.adjust($color-error, $lightness: -10%);
+  }
 }
