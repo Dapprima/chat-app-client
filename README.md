@@ -1,69 +1,50 @@
-# React + TypeScript + Vite
+# Real-Time Chat Application - Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the frontend application for a real-time chat system.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **User Authentication:** Registration and login.
+- **Chat Room Management:** Display, join, and create chat rooms.
+- **Real-Time Messaging:** Instant message sending and receiving.
+- **Online User Presence:** Displays users active in the current room.
+- **Responsive Design:** Adapts to various screen sizes.
+- **Modular Architecture:** Organized React components and hooks.
 
-## Expanding the ESLint configuration
+## Technologies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Framework:** React with TypeScript
+- **Styling:** SCSS
+- **Build Tool:** Vite
+- **Real-time:** Socket.IO Client
+- **State Management:** React Context API
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Assumptions
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Backend URL:** Assumes backend is accessible at `http://localhost:5000`.
+- **Session Storage:** JWT token stored in `localStorage` for session persistence.
+- **Error Handling:** Console logging and in-component state for errors. No global toast system implemented.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+## Setup and Installation
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Prerequisites
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+- Node.js (v18+)
+- npm
+- Git
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+### Steps
+
+1.  **Navigate:** `cd fullstack-chatapp/client`
+2.  **Install:** `npm install`
+3.  **Run:** `npm run dev`
+    - **Note:** Ensure the backend server is running first (refer to [Backend README](../server/README.md)).
+
+## Usage
+
+1.  Access `http://localhost:5173` in your browser.
+2.  Register or log in.
+3.  Join existing rooms or create new ones via the modal.
+4.  Send and receive messages in real-time.
+5.  Observe online users in the sidebar.
+6.  Logout via the top navigation.
